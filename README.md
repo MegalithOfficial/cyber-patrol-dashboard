@@ -130,6 +130,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Map tiles provided by [CartoDB](https://carto.com/)
+- Map tiles provided by [OpenStreetMap](https://www.openstreetmap.org/)
 - Icons by [Lucide](https://lucide.dev/)
 - Built with [React](https://reactjs.org/) and [Vite](https://vitejs.dev/) 
