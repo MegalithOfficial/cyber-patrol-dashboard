@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background: #111827;
+  color: #E5E7EB;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.5);
+}
+
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes scanline {
+  from {
+    transform: translateY(-100vh);
+  }
+  to {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+@keyframes radar-sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@layer utilities {
+  .animate-scan {
+    animation: scan 8s linear infinite;
+  }
+  
+  .animate-scanline {
+    animation: scanline 3s linear infinite;
+  }
+  
+  .animate-wave {
+    animation: wave 2s ease-in-out infinite;
+  }
+}
+
+/* Add these styles to your existing CSS */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(8, 145, 178, 0.1);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(8, 145, 178, 0.3);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(8, 145, 178, 0.5);
+}
+
+/* Add these to your existing styles */
+.mapboxgl-control-container {
+  display: none;
+}
+
+/* Optional: Style the map to match the theme */
+.mapboxgl-canvas {
+  filter: hue-rotate(180deg) saturate(80%) brightness(80%);
+}
+
+/* Add these to your existing styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.leaflet-control-container {
+  position: absolute;
+  z-index: 500;
+}
+
+/* Add these to your existing styles */
+.leaflet-popup-content-wrapper {
+  background: transparent;
+  box-shadow: none;
+}
+
+.leaflet-popup-tip {
+  background: #0f172a;
+  border: 1px solid rgba(8, 145, 178, 0.5);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+}
+
+.leaflet-container {
+  font-family: 'Courier New', Courier, monospace;
+}
