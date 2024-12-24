@@ -244,8 +244,13 @@ const generateRandomLocation = (id: string): Location => {
 };
 
 export const useDynamicLocations = () => {
-  const [locations, setLocations] = useState<Location[]>(laLocations);
-  const [nextId, setNextId] = useState(16);
+  // Transform initial locations to have prefixed IDs
+  const initialLocations = laLocations.map(loc => ({
+    ...loc,
+    id: `initial-${loc.id}` // Add prefix to initial locations
+  }));
+
+  const [locations, setLocations] = useState<Location[]>(initialLocations);
   const [activityLog, setActivityLog] = useState<Array<{timestamp: string; message: string}>>([]);
   const [systemMetrics, setSystemMetrics] = useState({
     totalPower: 0,
@@ -256,22 +261,28 @@ export const useDynamicLocations = () => {
     systemLoad: 0
   });
 
-  // Initialize with 3 police cars instead of 5
+  // Generate unique ID using timestamp and random suffix
+  const generateUniqueId = (prefix: string) => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    return `${prefix}-${timestamp}-${random}`;
+  };
+
+  // Initialize with 3 police cars
   useEffect(() => {
     const addInitialPoliceCars = () => {
       setLocations(prevLocations => {
-        const policeCars = Array.from({ length: 3 }, (_, i) => {
-          const id = (nextId + i).toString();
+        const policeCars = Array.from({ length: 3 }, () => {
+          const id = generateUniqueId('police');
           const baseLocation = generateRandomLocation(id);
           return {
             ...baseLocation,
             type: 'police' as const,
             status: 'active' as const,
-            title: `POLICE ${id.slice(-4)}`,
+            title: `POLICE ${id.split('-')[2]}`, // Use random suffix for display
             details: 'Initial patrol unit deployed'
           } satisfies Location;
         });
-        setNextId(prev => prev + 3);
         return [...prevLocations, ...policeCars];
       });
     };
@@ -302,32 +313,19 @@ export const useDynamicLocations = () => {
   useEffect(() => {
     const addLocation = () => {
       setLocations(prevLocations => {
-        // Count current police cars
         const currentPoliceCars = prevLocations.filter(loc => loc.type === 'police').length;
-        
-        // Only force spawn a police car if we have less than 3 AND we're not at max capacity
         const forcePolice = currentPoliceCars < 3 && prevLocations.length < 35;
-        const baseLocation = generateRandomLocation(nextId.toString());
+        
+        // Generate unique ID based on type
+        const id = generateUniqueId(forcePolice ? 'police' : 'loc');
+        const baseLocation = generateRandomLocation(id);
         const newLocation: Location = forcePolice ? {
-          id: nextId.toString(),
-          lat: baseLocation.lat,
-          lng: baseLocation.lng,
+          ...baseLocation,
           type: 'police' as const,
           status: 'active' as const,
-          title: `POLICE ${nextId.toString().slice(-4)}`,
-          details: 'Patrol unit deployed',
-          timestamp: baseLocation.timestamp,
-          metrics: baseLocation.metrics,
-          alerts: baseLocation.alerts,
-          priority: baseLocation.priority,
-          lastMaintenance: baseLocation.lastMaintenance,
-          nextMaintenance: baseLocation.nextMaintenance,
-          operationalHours: baseLocation.operationalHours,
-          firmware: baseLocation.firmware,
-          area: baseLocation.area
+          title: `POLICE ${id.split('-')[2]}`, // Use random suffix for display
+          details: 'Patrol unit deployed'
         } : baseLocation;
-
-        setNextId(prev => prev + 1);
 
         // Add to activity log
         setActivityLog(prev => [{
@@ -336,18 +334,22 @@ export const useDynamicLocations = () => {
         }, ...prev].slice(0, 50));
 
         // If we already have 35 locations, remove the oldest non-police one
-        // OR remove the oldest police car if we have more than 5 police cars
-        if (prevLocations.length >= 35 || (currentPoliceCars >= 5 && newLocation.type === 'police')) {
-          const sortedLocations = [...prevLocations].sort((a, b) => parseInt(a.id) - parseInt(b.id));
+        if (prevLocations.length >= 35) {
+          const sortedLocations = [...prevLocations].sort((a, b) => {
+            // Extract timestamp from ID for comparison
+            const aTime = parseInt(a.id.split('-')[1] || '0');
+            const bTime = parseInt(b.id.split('-')[1] || '0');
+            return aTime - bTime;
+          });
           
-          // If we're adding a police car and already have 5, remove the oldest police car
-          if (newLocation.type === 'police' && currentPoliceCars >= 5) {
+          // If we're adding a police car and already have enough, remove the oldest police car
+          if (newLocation.type === 'police' && currentPoliceCars >= 3) {
             const oldestPoliceIndex = sortedLocations.findIndex(loc => loc.type === 'police');
             if (oldestPoliceIndex !== -1) {
               sortedLocations.splice(oldestPoliceIndex, 1);
               return [...sortedLocations, newLocation];
             }
-            return prevLocations; // Don't add if we can't remove an old police car
+            return prevLocations;
           }
           
           // Otherwise, remove the oldest non-police location
@@ -356,7 +358,7 @@ export const useDynamicLocations = () => {
             sortedLocations.splice(oldestNonPoliceIndex, 1);
             return [...sortedLocations, newLocation];
           }
-          return prevLocations; // Don't add new location if we can't remove an old one
+          return prevLocations;
         }
 
         return [...prevLocations, newLocation];
@@ -365,7 +367,7 @@ export const useDynamicLocations = () => {
 
     const interval = setInterval(addLocation, 3000);
     return () => clearInterval(interval);
-  }, [nextId]);
+  }, []);
 
   return {
     locations,

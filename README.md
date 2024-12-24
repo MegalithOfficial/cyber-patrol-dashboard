@@ -8,10 +8,12 @@
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
+### 🌐 [Live Demo](https://cyber-patrol-dashboard.vercel.app) | [GitHub](https://github.com/MegalithOfficial/cyber-patrol-dashboard)
+
 </div>
 
 <div align="center">
-  <img src="./images/site.png" alt="Cyber Patrol Dashboard Interface" width="100%" />
+  <img src="./images/site-screenshot.png" alt="Cyber Patrol Dashboard Interface" width="100%" />
 </div>
 
 ⚠️ **DISCLAIMER: This is a fictional project created for demonstration purposes only. It does not connect to or represent any real security systems, law enforcement agencies, or surveillance networks.**
